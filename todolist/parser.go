@@ -85,21 +85,18 @@ func (p *Parser) Projects(input string) []string {
 }
 
 func (p *Parser) Contexts(input string) []string {
-	r, err := regexp.Compile(`\@[\p{L}\d_]+`)
-	if err != nil {
-		fmt.Println("regex error", err)
-	}
+	r := regexp.MustCompile(`\@[\p{L}\d_]+`)
 	return p.matchWords(input, r)
 }
 
 func (p *Parser) hasDue(input string) bool {
-	r1, _ := regexp.Compile(`due \w+$`)
-	r2, _ := regexp.Compile(`due \w+ \d+$`)
+	r1 := regexp.MustCompile(`due \w+$`)
+	r2 := regexp.MustCompile(`due \w+ \d+$`)
 	return (r1.MatchString(input) || r2.MatchString(input))
 }
 
 func (p *Parser) Due(input string, day time.Time) string {
-	r, _ := regexp.Compile(`due .*$`)
+	r := regexp.MustCompile(`due .*$`)
 
 	res := r.FindString(input)
 	res = res[4:]
