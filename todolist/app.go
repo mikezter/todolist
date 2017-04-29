@@ -133,7 +133,7 @@ func (a *App) ExpandTodo(input string) {
 	newTodos := strings.Split(input[todos+1:], ",")
 
 	for _, todo := range newTodos {
-		subject := commonProject + " " + todo
+		subject := commonProject + " " + strings.Trim(todo, " ")
 		a.AddTodo(subject)
 	}
 
