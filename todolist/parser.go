@@ -14,8 +14,6 @@ type Parser struct {
 }
 
 func (p *Parser) ParseNewTodo(input string) *Todo {
-	r, _ := regexp.Compile(`^(add|a)(\\ |) `)
-	input = r.ReplaceAllString(input, "")
 	if input == "" {
 		return nil
 	}
@@ -30,21 +28,36 @@ func (p *Parser) ParseNewTodo(input string) *Todo {
 	return todo
 }
 
-func (p Parser) Parse() (string, int, string) {
-	input := p.input
-	r := regexp.MustCompile(`(\w+) (\d+) (.*)`)
-	matches := r.FindStringSubmatch(input)
-	if len(matches) < 4 {
-		fmt.Println("Could match command, id or subject")
-		return "", -1, input
+func (p Parser) parseId() int {
+	r := regexp.MustCompile(`(\d+)`)
+	matches := r.FindStringSubmatch(p.input)
+	if len(matches) == 0 {
+		fmt.Println("Could match id")
+		return -1
 	}
-	id, err := strconv.Atoi(matches[2])
+	id, err := strconv.Atoi(matches[1])
 	if err != nil {
 		fmt.Println("Invalid id.")
-		return "", -1, input
+		return -1
 	}
+	return id
+}
 
-	return matches[1], id, matches[3]
+func (p Parser) parseSubject() string {
+	r := regexp.MustCompile(`(\d+) (.*)`)
+	matches := r.FindStringSubmatch(p.input)
+	if len(matches) < 3 {
+		return ""
+	}
+	return matches[2]
+}
+
+func (p Parser) Parse() (int, string) {
+
+	id := p.parseId()
+	subject := p.parseSubject()
+
+	return id, subject
 }
 
 func (p *Parser) Subject(input string) string {
@@ -57,19 +70,17 @@ func (p *Parser) Subject(input string) string {
 }
 
 func (p *Parser) ExpandProject(input string) string {
-	r, _ := regexp.Compile(`(ex|expand) +\d+ +\+[\p{L}\d_-]+:`)
-	pattern := r.FindString(input)
-	if len(pattern) == 0 {
+	r := regexp.MustCompile(`(\+[\p{L}\d_-]+):`)
+	matches := r.FindStringSubmatch(input)
+	if len(matches) < 2 {
 		return ""
 	}
 
-	newProject := pattern[0 : len(pattern)-1]
-	project := strings.Split(newProject, " ")
-	return project[len(project)-1]
+	return matches[1]
 }
 
 func (p *Parser) Projects(input string) []string {
-	r, _ := regexp.Compile(`\+[\p{L}\d_-]+`)
+	r := regexp.MustCompile(`\+[\p{L}\d_-]+`)
 	return p.matchWords(input, r)
 }
 

@@ -23,7 +23,7 @@ func newTestApp() *todolist.App {
 
 func TestAddTodo(t *testing.T) {
 	app := newTestApp()
-	err := routeInput(app, "a", "a foobar")
+	err := routeInput(app, "a", "foobar")
 	if err != nil {
 		t.Fatal(err)
 	}

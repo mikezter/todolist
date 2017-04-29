@@ -93,7 +93,7 @@ func (a *App) UnarchiveTodo(input string) {
 
 func (a *App) EditTodoSubject(input string) {
 	a.Load()
-	_, id, subject := Parser{input}.Parse()
+	id, subject := Parser{input}.Parse()
 	id, todo := a.getId(input)
 	if id == -1 {
 		return
@@ -133,8 +133,8 @@ func (a *App) ExpandTodo(input string) {
 	newTodos := strings.Split(input[todos+1:], ",")
 
 	for _, todo := range newTodos {
-		args := []string{"add ", commonProject, " ", todo}
-		a.AddTodo(strings.Join(args, ""))
+		subject := commonProject + " " + todo
+		a.AddTodo(subject)
 	}
 
 	a.TodoList.Delete(id)
@@ -185,7 +185,7 @@ func (a *App) UnprioritizeTodo(input string) {
 }
 
 func (a *App) getId(input string) (int, *Todo) {
-	_, id, _ := Parser{input}.Parse()
+	id, _ := Parser{input}.Parse()
 	todo := a.TodoList.FindById(id)
 	if todo == nil {
 		fmt.Println("No such id.")

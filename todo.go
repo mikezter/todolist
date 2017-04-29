@@ -15,11 +15,16 @@ const (
 )
 
 func main() {
-	if len(os.Args) <= 1 {
+	if len(os.Args) < 2 {
 		usage()
 		os.Exit(0)
 	}
-	input := strings.Join(os.Args[1:], " ")
+
+	var input string
+	if len(os.Args) > 2 {
+		input = strings.Join(os.Args[2:], " ")
+	}
+
 	app := todolist.NewApp()
 	err := routeInput(app, os.Args[1], input)
 	if err != nil {
