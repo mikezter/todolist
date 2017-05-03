@@ -23,8 +23,8 @@ func (a *App) InitializeRepo() {
 
 func (a *App) AddTodo(input string) {
 	a.Load()
-	parser := &Parser{}
-	todo := parser.ParseNewTodo(input)
+	parser := Parser{input}
+	todo := parser.ParseNewTodo()
 	if todo == nil {
 		fmt.Println("I need more information. Try something like 'todo a chat with @bob due tom'")
 		return
@@ -109,8 +109,8 @@ func (a *App) EditTodoDue(input string) {
 	if id == -1 {
 		return
 	}
-	parser := &Parser{}
-	todo.Due = parser.Due(input, time.Now())
+	parser := Parser{input}
+	todo.Due = parser.Due(time.Now())
 	a.Save()
 	fmt.Println("Todo due date updated.")
 }
@@ -118,7 +118,7 @@ func (a *App) EditTodoDue(input string) {
 func (a *App) ExpandTodo(input string) {
 	a.Load()
 	id, _ := a.getId(input)
-	parser := &Parser{}
+	parser := Parser{input}
 	if id == -1 {
 		return
 	}

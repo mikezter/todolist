@@ -13,17 +13,13 @@ type Parser struct {
 	input string
 }
 
-func (p *Parser) ParseNewTodo(input string) *Todo {
-	if input == "" {
-		return nil
-	}
-
+func (p Parser) ParseNewTodo() *Todo {
 	todo := NewTodo()
-	todo.Subject = p.Subject(input)
-	todo.Projects = p.Projects(input)
-	todo.Contexts = p.Contexts(input)
-	if p.hasDue(input) {
-		todo.Due = p.Due(input, time.Now())
+	todo.Subject = p.Subject()
+	todo.Projects = p.Projects()
+	todo.Contexts = p.Contexts()
+	if p.hasDue() {
+		todo.Due = p.Due(time.Now())
 	}
 	return todo
 }
@@ -60,16 +56,16 @@ func (p Parser) Parse() (int, string) {
 	return id, subject
 }
 
-func (p *Parser) Subject(input string) string {
-	if strings.Contains(input, " due") {
-		index := strings.LastIndex(input, " due")
-		return input[0:index]
+func (p Parser) Subject() string {
+	if strings.Contains(p.input, " due") {
+		index := strings.LastIndex(p.input, " due")
+		return p.input[0:index]
 	} else {
-		return input
+		return p.input
 	}
 }
 
-func (p *Parser) ExpandProject(input string) string {
+func (p Parser) ExpandProject(input string) string {
 	r := regexp.MustCompile(`(\+[\p{L}\d_-]+):`)
 	matches := r.FindStringSubmatch(input)
 	if len(matches) < 2 {
@@ -79,26 +75,26 @@ func (p *Parser) ExpandProject(input string) string {
 	return matches[1]
 }
 
-func (p *Parser) Projects(input string) []string {
+func (p Parser) Projects() []string {
 	r := regexp.MustCompile(`\+[\p{L}\d_-]+`)
-	return p.matchWords(input, r)
+	return p.matchWords(p.input, r)
 }
 
-func (p *Parser) Contexts(input string) []string {
+func (p Parser) Contexts() []string {
 	r := regexp.MustCompile(`\@[\p{L}\d_]+`)
-	return p.matchWords(input, r)
+	return p.matchWords(p.input, r)
 }
 
-func (p *Parser) hasDue(input string) bool {
+func (p Parser) hasDue() bool {
 	r1 := regexp.MustCompile(`due \w+$`)
 	r2 := regexp.MustCompile(`due \w+ \d+$`)
-	return (r1.MatchString(input) || r2.MatchString(input))
+	return (r1.MatchString(p.input) || r2.MatchString(p.input))
 }
 
-func (p *Parser) Due(input string, day time.Time) string {
+func (p Parser) Due(day time.Time) string {
 	r := regexp.MustCompile(`due .*$`)
 
-	res := r.FindString(input)
+	res := r.FindString(p.input)
 	res = res[4:]
 	switch res {
 	case "none":
@@ -131,7 +127,7 @@ func (p *Parser) Due(input string, day time.Time) string {
 	return p.parseArbitraryDate(res, time.Now())
 }
 
-func (p *Parser) parseArbitraryDate(_date string, pivot time.Time) string {
+func (p Parser) parseArbitraryDate(_date string, pivot time.Time) string {
 	d1 := p.parseArbitraryDateWithYear(_date, pivot.Year())
 
 	var diff1 time.Duration
@@ -148,7 +144,7 @@ func (p *Parser) parseArbitraryDate(_date string, pivot time.Time) string {
 	}
 }
 
-func (p *Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
+func (p Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
 	res := strings.Join([]string{_date, strconv.Itoa(year)}, " ")
 	if date, err := time.Parse("Jan 2 2006", res); err == nil {
 		return date
@@ -164,42 +160,42 @@ func (p *Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
 	return time.Now()
 }
 
-func (p *Parser) monday(day time.Time) string {
+func (p Parser) monday(day time.Time) string {
 	mon := getNearestMonday(day)
 	return p.thisOrNextWeek(mon, day)
 }
 
-func (p *Parser) tuesday(day time.Time) string {
+func (p Parser) tuesday(day time.Time) string {
 	tue := getNearestMonday(day).AddDate(0, 0, 1)
 	return p.thisOrNextWeek(tue, day)
 }
 
-func (p *Parser) wednesday(day time.Time) string {
+func (p Parser) wednesday(day time.Time) string {
 	tue := getNearestMonday(day).AddDate(0, 0, 2)
 	return p.thisOrNextWeek(tue, day)
 }
 
-func (p *Parser) thursday(day time.Time) string {
+func (p Parser) thursday(day time.Time) string {
 	tue := getNearestMonday(day).AddDate(0, 0, 3)
 	return p.thisOrNextWeek(tue, day)
 }
 
-func (p *Parser) friday(day time.Time) string {
+func (p Parser) friday(day time.Time) string {
 	tue := getNearestMonday(day).AddDate(0, 0, 4)
 	return p.thisOrNextWeek(tue, day)
 }
 
-func (p *Parser) saturday(day time.Time) string {
+func (p Parser) saturday(day time.Time) string {
 	tue := getNearestMonday(day).AddDate(0, 0, 5)
 	return p.thisOrNextWeek(tue, day)
 }
 
-func (p *Parser) sunday(day time.Time) string {
+func (p Parser) sunday(day time.Time) string {
 	tue := getNearestMonday(day).AddDate(0, 0, 6)
 	return p.thisOrNextWeek(tue, day)
 }
 
-func (p *Parser) thisOrNextWeek(day time.Time, pivotDay time.Time) string {
+func (p Parser) thisOrNextWeek(day time.Time, pivotDay time.Time) string {
 	if day.Before(pivotDay) {
 		return day.AddDate(0, 0, 7).Format("2006-01-02")
 	} else {
@@ -207,7 +203,7 @@ func (p *Parser) thisOrNextWeek(day time.Time, pivotDay time.Time) string {
 	}
 }
 
-func (p *Parser) matchWords(input string, r *regexp.Regexp) []string {
+func (p Parser) matchWords(input string, r *regexp.Regexp) []string {
 	results := r.FindAllString(input, -1)
 	ret := []string{}
 

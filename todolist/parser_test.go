@@ -10,16 +10,18 @@ import (
 )
 
 func TestParseSubject(t *testing.T) {
-	parser := &Parser{}
-	todo := parser.ParseNewTodo("do this thing")
+	input := "do this thing"
+	parser := Parser{input}
+	todo := parser.ParseNewTodo()
 	if todo.Subject != "do this thing" {
 		t.Error("Expected todo.Subject to equal 'do this thing'")
 	}
 }
 
 func TestParseSubjectWithDue(t *testing.T) {
-	parser := &Parser{}
-	todo := parser.ParseNewTodo("do this thing due tomorrow")
+	input := "do this thing due tomorrow"
+	parser := Parser{input}
+	todo := parser.ParseNewTodo()
 	if todo.Subject != "do this thing" {
 		t.Error("Expected todo.Subject to equal 'do this thing', got ", todo.Subject)
 	}
@@ -27,7 +29,7 @@ func TestParseSubjectWithDue(t *testing.T) {
 
 func TestParseExpandProjects(t *testing.T) {
 	assert := assert.New(t)
-	parser := &Parser{}
+	parser := Parser{}
 	correctFormat := parser.ExpandProject("ex 113 +meeting: figures, slides, coffee, suger")
 	assert.Equal("+meeting", correctFormat)
 	wrongFormat1 := parser.ExpandProject("ex 114 +meeting figures, slides, coffee, suger")
@@ -41,8 +43,9 @@ func TestParseExpandProjects(t *testing.T) {
 }
 
 func TestParseProjects(t *testing.T) {
-	parser := &Parser{}
-	todo := parser.ParseNewTodo("do this thing +proj1 +proj2 +專案3 +proj-name due tomorrow")
+	input := "do this thing +proj1 +proj2 +專案3 +proj-name due tomorrow"
+	parser := Parser{input}
+	todo := parser.ParseNewTodo()
 	if len(todo.Projects) != 4 {
 		t.Error("Expected Projects length to be 3")
 	}
@@ -61,8 +64,9 @@ func TestParseProjects(t *testing.T) {
 }
 
 func TestParseContexts(t *testing.T) {
-	parser := &Parser{}
-	todo := parser.ParseNewTodo("do this thing with @bob and @mary due tomorrow")
+	input := "do this thing with @bob and @mary due tomorrow"
+	parser := Parser{input}
+	todo := parser.ParseNewTodo()
 	if len(todo.Contexts) != 2 {
 		t.Error("Expected Projects length to be 2")
 	}
@@ -75,24 +79,28 @@ func TestParseContexts(t *testing.T) {
 }
 
 func TestDueToday(t *testing.T) {
-	parser := &Parser{}
-	todo := parser.ParseNewTodo("do this thing with @bob and @mary due today")
+	parser := Parser{"do this thing with @bob and @mary due today"}
+	todo := parser.ParseNewTodo()
 	if todo.Due != bod(time.Now()).Format("2006-01-02") {
 		fmt.Println("Date is different", todo.Due, time.Now())
 	}
-	todo = parser.ParseNewTodo("do this thing with @bob and @mary due tod")
+
+	parser.input = "do this thing with @bob and @mary due tod"
+	todo = parser.ParseNewTodo()
 	if todo.Due != bod(time.Now()).Format("2006-01-02") {
 		fmt.Println("Date is different", todo.Due, time.Now())
 	}
 }
 
 func TestDueTomorrow(t *testing.T) {
-	parser := &Parser{}
-	todo := parser.ParseNewTodo("do this thing with @bob and @mary due tomorrow")
+	parser := Parser{"do this thing with @bob and @mary due tomorrow"}
+	todo := parser.ParseNewTodo()
 	if todo.Due != bod(time.Now()).AddDate(0, 0, 1).Format("2006-01-02") {
 		fmt.Println("Date is different", todo.Due, time.Now())
 	}
-	todo = parser.ParseNewTodo("do this thing with @bob and @mary due tom")
+
+	parser.input = "do this thing with @bob and @mary due tom"
+	todo = parser.ParseNewTodo()
 	if todo.Due != bod(time.Now()).AddDate(0, 0, 1).Format("2006-01-02") {
 		fmt.Println("Date is different", todo.Due, time.Now())
 	}
@@ -100,65 +108,68 @@ func TestDueTomorrow(t *testing.T) {
 
 func TestDueSpecific(t *testing.T) {
 	assert := assert.New(t)
-	parser := &Parser{}
-	todo := parser.ParseNewTodo("do this thing with @bob and @mary due jun 1")
+	parser := Parser{"do this thing with @bob and @mary due jun 1"}
+	todo := parser.ParseNewTodo()
 	year := strconv.Itoa(time.Now().Year())
 	assert.Equal(fmt.Sprintf("%s-06-01", year), todo.Due)
 }
 
 func TestMondayOnSunday(t *testing.T) {
 	assert := assert.New(t)
-	parser := &Parser{}
+	parser := Parser{}
 	now, _ := time.Parse("2006-01-02", "2016-04-24")
 	assert.Equal("2016-04-25", parser.monday(now))
 }
 
 func TestMondayOnMonday(t *testing.T) {
 	assert := assert.New(t)
-	parser := &Parser{}
+	parser := Parser{}
 	now, _ := time.Parse("2006-01-02", "2016-04-25")
 	assert.Equal("2016-04-25", parser.monday(now))
 }
 
 func TestMondayOnTuesday(t *testing.T) {
 	assert := assert.New(t)
-	parser := &Parser{}
+	parser := Parser{}
 	now, _ := time.Parse("2006-01-02", "2016-04-26")
 	assert.Equal("2016-05-02", parser.monday(now))
 }
 
 func TestTuesdayOnMonday(t *testing.T) {
 	assert := assert.New(t)
-	parser := &Parser{}
+	parser := Parser{}
 	now, _ := time.Parse("2006-01-02", "2016-04-25")
 	assert.Equal("2016-04-26", parser.tuesday(now))
 }
 
 func TestTuesdayOnWednesday(t *testing.T) {
 	assert := assert.New(t)
-	parser := &Parser{}
+	parser := Parser{}
 	now, _ := time.Parse("2006-01-02", "2016-04-27")
 	assert.Equal("2016-05-03", parser.tuesday(now))
 }
 
 func TestDueOnSpecificDate(t *testing.T) {
 	assert := assert.New(t)
-	parser := &Parser{}
-	year := strconv.Itoa(time.Now().Year())
-	assert.Equal(fmt.Sprintf("%s-05-02", year), parser.Due("due may 2", time.Now()))
-	assert.Equal(fmt.Sprintf("%s-06-01", year), parser.Due("due jun 1", time.Now()))
+	year := time.Now().Year()
+
+	parser := Parser{"due may 2"}
+	assert.Equal(fmt.Sprintf("%v-05-02", year), parser.Due(time.Now()))
+
+	parser.input = "due jun 1"
+	assert.Equal(fmt.Sprintf("%v-06-01", year), parser.Due(time.Now()))
 }
 
 func TestDueOnSpecificDateEuropean(t *testing.T) {
 	assert := assert.New(t)
-	parser := &Parser{}
-	year := strconv.Itoa(time.Now().Year())
-	assert.Equal(fmt.Sprintf("%s-05-02", year), parser.Due("due 2 may", time.Now()))
+	parser := Parser{"due 2 may"}
+	year := time.Now().Year()
+	assert.Equal(fmt.Sprintf("%v-05-02", year), parser.Due(time.Now()))
 }
 
 func TestDueIntelligentlyChoosesCorrectYear(t *testing.T) {
 	assert := assert.New(t)
-	parser := &Parser{}
+	parser := Parser{}
 	marchTime, _ := time.Parse("2006-01-02", "2016-03-25")
 	januaryTime, _ := time.Parse("2006-01-02", "2016-01-05")
 	septemberTime, _ := time.Parse("2006-01-02", "2016-09-25")

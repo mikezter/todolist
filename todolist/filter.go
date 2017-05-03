@@ -21,13 +21,13 @@ func (f *TodoFilter) Filter(input string) []*Todo {
 }
 
 func (t *TodoFilter) isFilteringByProjects(input string) bool {
-	parser := &Parser{}
-	return len(parser.Projects(input)) > 0
+	parser := Parser{input}
+	return len(parser.Projects()) > 0
 }
 
 func (t *TodoFilter) isFilteringByContexts(input string) bool {
-	parser := &Parser{}
-	return len(parser.Contexts(input)) > 0
+	parser := Parser{input}
+	return len(parser.Contexts()) > 0
 }
 
 func (f *TodoFilter) filterArchived(input string) []*Todo {
@@ -52,8 +52,8 @@ func (f *TodoFilter) filterProjects(input string) []*Todo {
 	if !f.isFilteringByProjects(input) {
 		return f.Todos
 	}
-	parser := &Parser{}
-	projects := parser.Projects(input)
+	parser := Parser{input}
+	projects := parser.Projects()
 	var ret []*Todo
 
 	for _, todo := range f.Todos {
@@ -72,8 +72,8 @@ func (f *TodoFilter) filterContexts(input string) []*Todo {
 	if !f.isFilteringByContexts(input) {
 		return f.Todos
 	}
-	parser := &Parser{}
-	contexts := parser.Contexts(input)
+	parser := Parser{input}
+	contexts := parser.Contexts()
 	var ret []*Todo
 
 	for _, todo := range f.Todos {
