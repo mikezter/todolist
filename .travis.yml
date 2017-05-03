@@ -5,5 +5,10 @@ go:
 os:
   - linux
   - osx
+before_install:
+  - go get github.com/mattn/goveralls
 script:
-  - go test -v ./...
+  - $HOME/gopath/bin/goveralls -service=travis-ci
+env:
+  global:
+    secure: HcyyiIstbkD9n2o29Og3V87Ac608kQ4eu16cy1u5ZZyEPYheD8MacB7W1rMfWQyQgtL6k/R2HhoZsV8Ehbtor2JdEvChlzNQ3kJO9jpvOaTiwCo012GPVtD2X0xz2yEvZylOIzq+vxbxQQWzXarC74g0o2zbZsJr8A3UQg4vx8C9RzPwPFnk0ruJPJ4BHLZqMmkPiou8jOiLgER/ii7JznDtMrI3KcTRHCYsDNvMPd2ACgYC42ocB3i53ft+RITRzWjQg7y3ttLh2pI6j0naOs96eGD2l+jnMgJviEFz8a0FWypmCbvp/6UAaTKtAHro4Yrm0vg3mMdRrkYFlhAdfEFGR5m3Zno/aXixQqhUIaJzlhRi4TCTsCN+3ZXiLCmu0lyb0QsawHnWo7J/NtRI2LMXeSva0IlDhoMDWo2aFYgRxL8lS8/PffFgfZLkxrMQ8RrrcKetcxCBac+TbOP3BYlWMmXXrwVUkM7459pZLZsvRtlthkdZOiUac806HyV1ytzPozLf+Pha6uo6oSUmZt2fZJa5b03i55RGfd75NF6LShC8Pm5ef6KUydBiyT255G4GPu/FVQNJPdZxGaW8IAfAolqTuOFUvlq5RLbVC+Ar2cLgmyf9lG7sLyKlfJVMtVa83SKSRGxwMFDalBsuqdwh/rHFKsEUGqrw4Cdkca0=
