@@ -7,3 +7,4 @@ dist
 # test/build artifacts
 t
 .todos.json
+coverage.out
