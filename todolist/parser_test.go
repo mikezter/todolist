@@ -173,9 +173,8 @@ func TestDueIntelligentlyChoosesCorrectYear(t *testing.T) {
 func TestParseCommandIdSubject(t *testing.T) {
 	assert := assert.New(t)
 	parser := Parser{"es 24 a new subject"}
-	command, id, subject := parser.Parse()
+	id, subject := parser.Parse()
 
-	assert.Equal("es", command)
 	assert.Equal(24, id)
 	assert.Equal("a new subject", subject)
 }
@@ -184,9 +183,8 @@ func TestParseInvalidCommandIdSubject(t *testing.T) {
 	assert := assert.New(t)
 	input := "es a new project"
 	parser := Parser{input}
-	command, id, subject := parser.Parse()
+	id, subject := parser.Parse()
 
-	assert.Equal("", command)
 	assert.Equal(-1, id)
-	assert.Equal(input, subject)
+	assert.Equal("", subject)
 }
