@@ -203,7 +203,7 @@ func TestParseInvalidCommandIdSubject(t *testing.T) {
 func newDate(y, m, d int) time.Time {
 	return time.Date(y, time.Month(m), d, 0, 0, 0, 1, time.Local)
 }
-func TestTableWeekdays(t *testing.T) {
+func TestDueWeekdays(t *testing.T) {
 
 	today := newDate(2017, 5, 9) // tuesday
 	dates := map[string]time.Time{
@@ -232,4 +232,21 @@ func TestTableWeekdays(t *testing.T) {
 			t.Error(input, actual, expected)
 		}
 	}
+}
+
+func TestDueInvalid(t *testing.T) {
+	today := newDate(2017, 5, 9) // tuesday
+	p := Parser{"no asd"}
+	if p.Due(today) != "" {
+		t.Fail()
+	}
+}
+
+func TestDueNone(t *testing.T) {
+	today := newDate(2017, 5, 9) // tuesday
+	p := Parser{"due none"}
+	if p.Due(today) != "" {
+		t.Fail()
+	}
+
 }
