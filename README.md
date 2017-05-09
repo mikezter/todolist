@@ -1,7 +1,6 @@
 # Todolist
 
-[![](https://goreportcard.com/badge/github.com/gammons/todolist)](https://goreportcard.com/report/github.com/gammons/todolist)
-[![Build Status](https://travis-ci.org/gammons/todolist.svg?branch=master)](https://travis-ci.org/gammons/todolist)
+[![Build Status](https://travis-ci.org/mikezter/todolist.svg?branch=edit-todos-test)](https://travis-ci.org/mikezter/todolist?branch=edit-todos-test)
 [![Coverage Status](https://coveralls.io/repos/github/mikezter/todolist/badge.svg?branch=edit-todos-tests)](https://coveralls.io/github/mikezter/todolist?branch=edit-todos-tests)
 
 Todolist is a simple and very fast task manager for the command line.  It is based on the [Getting Things Done][gtd] methodology.
