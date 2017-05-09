@@ -199,3 +199,37 @@ func TestParseInvalidCommandIdSubject(t *testing.T) {
 	assert.Equal(-1, id)
 	assert.Equal("", subject)
 }
+
+func newDate(y, m, d int) time.Time {
+	return time.Date(y, time.Month(m), d, 0, 0, 0, 1, time.Local)
+}
+func TestTableWeekdays(t *testing.T) {
+
+	today := newDate(2017, 5, 9) // tuesday
+	dates := map[string]time.Time{
+		"due tod":       newDate(2017, 5, 9),  // today
+		"due tom":       newDate(2017, 5, 10), // tomorrow
+		"due tue":       newDate(2017, 5, 9),  // tuesday
+		"due wed":       newDate(2017, 5, 10), // wednesday
+		"due thu":       newDate(2017, 5, 11), // thursday
+		"due fri":       newDate(2017, 5, 12), // friday
+		"due sat":       newDate(2017, 5, 13), // saturday
+		"due sun":       newDate(2017, 5, 14), // sunday
+		"due mon":       newDate(2017, 5, 15), // monday
+		"due last week": newDate(2017, 5, 1),  // monday last week
+		"due next week": newDate(2017, 5, 15), // monday next week
+	}
+
+	p := Parser{}
+
+	for input, date := range dates {
+		p.input = input
+
+		expected := date.Format("2006-01-02")
+		actual := p.Due(today)
+
+		if actual != expected {
+			t.Error(input, actual, expected)
+		}
+	}
+}

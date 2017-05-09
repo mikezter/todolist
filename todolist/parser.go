@@ -92,11 +92,14 @@ func (p Parser) hasDue() bool {
 }
 
 func (p Parser) Due(day time.Time) string {
-	r := regexp.MustCompile(`due .*$`)
+	r := regexp.MustCompile(`due (.*$)`)
+	matches := r.FindStringSubmatch(p.input)
 
-	res := r.FindString(p.input)
-	res = res[4:]
-	switch res {
+	if len(matches) < 2 {
+		return ""
+	}
+
+	switch matches[1] {
 	case "none":
 		return ""
 	case "today", "tod":
@@ -124,7 +127,7 @@ func (p Parser) Due(day time.Time) string {
 		n := bod(time.Now())
 		return getNearestMonday(n).AddDate(0, 0, 7).Format("2006-01-02")
 	}
-	return p.parseArbitraryDate(res, time.Now())
+	return p.parseArbitraryDate(matches[1], time.Now())
 }
 
 func (p Parser) parseArbitraryDate(_date string, pivot time.Time) string {
