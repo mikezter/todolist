@@ -32,7 +32,7 @@ func (p Parser) parseId() int {
 	r := regexp.MustCompile(`(\d+)`)
 	matches := r.FindStringSubmatch(p.input)
 	if len(matches) == 0 {
-		fmt.Println("Could match id")
+		fmt.Println("Could not match id")
 		return -1
 	}
 	id, err := strconv.Atoi(matches[1])
