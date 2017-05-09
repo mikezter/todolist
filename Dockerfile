@@ -11,6 +11,7 @@ RUN go-wrapper install github.com/gammons/todolist
 
 RUN ln -s /.todos.json $HOME/.todos.json
 
-CMD ["todolist", "web"]
+ENTRYPOINT ["todolist"]
+CMD ["web"]
 
 EXPOSE 7890
