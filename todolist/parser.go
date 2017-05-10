@@ -1,12 +1,15 @@
 package todolist
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gammons/todolist/weekdayer"
 )
 
 type Parser struct {
@@ -91,8 +94,24 @@ func (p Parser) hasDue() bool {
 	return (r1.MatchString(p.input) || r2.MatchString(p.input))
 }
 
+type withoutDate error
+
+func (p Parser) dueDate(pivot time.Time) (*time.Time, error) {
+	r := regexp.MustCompile(`/w*due/w+(.*)$`)
+	matches := r.FindStringSubmatch(p.input)
+
+	if len(matches) < 2 {
+		return nil, withoutDate(errors.New("withoutDate"))
+	}
+
+	input := matches[1]
+
+	date, err := weekdayer.English(input, time.Now())
+	return &date, nil
+}
+
 func (p Parser) Due(day time.Time) string {
-	r := regexp.MustCompile(`due (.*$)`)
+	r := regexp.MustCompile(`due (.*)$`)
 	matches := r.FindStringSubmatch(p.input)
 
 	if len(matches) < 2 {
