@@ -203,29 +203,32 @@ func TestParseInvalidCommandIdSubject(t *testing.T) {
 func newDate(y, m, d int) time.Time {
 	return time.Date(y, time.Month(m), d, 0, 0, 0, 1, time.Local)
 }
-func TestDueWeekdays(t *testing.T) {
 
+func formattedDate(y, m, d int) string {
+	return newDate(y, m, d).Format("2006-01-02")
+}
+
+func TestDueWeekdays(t *testing.T) {
 	today := newDate(2017, 5, 9) // tuesday
-	dates := map[string]time.Time{
-		"due tod":       newDate(2017, 5, 9),  // today
-		"due tom":       newDate(2017, 5, 10), // tomorrow
-		"due tue":       newDate(2017, 5, 9),  // tuesday
-		"due wed":       newDate(2017, 5, 10), // wednesday
-		"due thu":       newDate(2017, 5, 11), // thursday
-		"due fri":       newDate(2017, 5, 12), // friday
-		"due sat":       newDate(2017, 5, 13), // saturday
-		"due sun":       newDate(2017, 5, 14), // sunday
-		"due mon":       newDate(2017, 5, 15), // monday
-		"due last week": newDate(2017, 5, 1),  // monday last week
-		"due next week": newDate(2017, 5, 15), // monday next week
+	dates := map[string]string{
+		"due tod":       formattedDate(2017, 5, 9),  // today
+		"due tom":       formattedDate(2017, 5, 10), // tomorrow
+		"due tue":       formattedDate(2017, 5, 9),  // tuesday
+		"due wed":       formattedDate(2017, 5, 10), // wednesday
+		"due thu":       formattedDate(2017, 5, 11), // thursday
+		"due fri":       formattedDate(2017, 5, 12), // friday
+		"due sat":       formattedDate(2017, 5, 13), // saturday
+		"due sun":       formattedDate(2017, 5, 14), // sunday
+		"due mon":       formattedDate(2017, 5, 15), // monday
+		"due last week": formattedDate(2017, 5, 1),  // monday last week
+		"due next week": formattedDate(2017, 5, 15), // monday next week
+		"due none":      "",                         // delete dueDate
 	}
 
 	p := Parser{}
 
-	for input, date := range dates {
+	for input, expected := range dates {
 		p.input = input
-
-		expected := date.Format("2006-01-02")
 		actual := p.Due(today)
 
 		if actual != expected {
