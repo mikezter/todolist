@@ -36,11 +36,26 @@ func (w englishWeekdayer) Weekday() (time.Time, error) {
 		date := w.pivot.AddDate(0, 0, modPositive(int(delta), 7))
 		return date, nil
 	}
-	return time.Now(), errors.New("weekday not recognized")
+
+	switch w.input {
+	case "last week":
+		return nextMonday(w.pivot.AddDate(0, 0, -14)), nil
+	case "next week":
+		return nextMonday(w.pivot), nil
+	}
+
+	return w.pivot, errors.New("weekday not recognized")
 }
 
 func modPositive(i, n int) int {
 	return (i%n + n) % n
+}
+
+func nextMonday(t time.Time) time.Time {
+	if t.Weekday() == time.Sunday {
+		return t.AddDate(0, 0, 1)
+	}
+	return t.AddDate(0, 0, int(8-t.Weekday()))
 }
 
 func pivot(t time.Time) time.Time {
