@@ -123,7 +123,7 @@ func (p Parser) Due(day time.Time) string {
 	r := regexp.MustCompile(`due (.*)$`)
 	matches := r.FindStringSubmatch(p.input)
 
-	if len(matches) < 2 {
+	if len(matches) < 2 || matches[1] == "none" {
 		return ""
 	}
 
@@ -157,6 +157,7 @@ func (p Parser) Due(day time.Time) string {
 		n := bod(time.Now())
 		return getNearestMonday(n).AddDate(0, 0, 7).Format("2006-01-02")
 	}
+
 	return p.parseArbitraryDate(matches[1], time.Now())
 }
 
