@@ -98,7 +98,7 @@ func (p Parser) hasDue() bool {
 type withoutDate error
 
 func (p Parser) dueDate(pivot time.Time) (*time.Time, error) {
-	r := regexp.MustCompile(`/w*due/w+(.*)$`)
+	r := regexp.MustCompile(`due (.*)$`)
 	matches := r.FindStringSubmatch(p.input)
 
 	if len(matches) < 2 {
