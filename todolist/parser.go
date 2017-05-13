@@ -1,7 +1,6 @@
 package todolist
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -97,16 +96,7 @@ func (p Parser) hasDue() bool {
 
 type withoutDate error
 
-func (p Parser) dueDate(pivot time.Time) (*time.Time, error) {
-	r := regexp.MustCompile(`due (.*)$`)
-	matches := r.FindStringSubmatch(p.input)
-
-	if len(matches) < 2 {
-		return nil, withoutDate(errors.New("withoutDate"))
-	}
-
-	input := matches[1]
-
+func (p Parser) dueDate(pivot time.Time, input string) (*time.Time, error) {
 	date, err := weekdays.English(input, time.Now()).Weekday()
 	if err != nil {
 		log.Println(err)
