@@ -114,41 +114,6 @@ func TestDueSpecific(t *testing.T) {
 	assert.Equal(fmt.Sprintf("%s-06-01", year), todo.Due)
 }
 
-func TestMondayOnSunday(t *testing.T) {
-	assert := assert.New(t)
-	parser := Parser{}
-	now, _ := time.Parse("2006-01-02", "2016-04-24")
-	assert.Equal("2016-04-25", parser.monday(now))
-}
-
-func TestMondayOnMonday(t *testing.T) {
-	assert := assert.New(t)
-	parser := Parser{}
-	now, _ := time.Parse("2006-01-02", "2016-04-25")
-	assert.Equal("2016-04-25", parser.monday(now))
-}
-
-func TestMondayOnTuesday(t *testing.T) {
-	assert := assert.New(t)
-	parser := Parser{}
-	now, _ := time.Parse("2006-01-02", "2016-04-26")
-	assert.Equal("2016-05-02", parser.monday(now))
-}
-
-func TestTuesdayOnMonday(t *testing.T) {
-	assert := assert.New(t)
-	parser := Parser{}
-	now, _ := time.Parse("2006-01-02", "2016-04-25")
-	assert.Equal("2016-04-26", parser.tuesday(now))
-}
-
-func TestTuesdayOnWednesday(t *testing.T) {
-	assert := assert.New(t)
-	parser := Parser{}
-	now, _ := time.Parse("2006-01-02", "2016-04-27")
-	assert.Equal("2016-05-03", parser.tuesday(now))
-}
-
 func TestDueOnSpecificDate(t *testing.T) {
 	assert := assert.New(t)
 	year := time.Now().Year()

@@ -94,14 +94,14 @@ func (p Parser) hasDue() bool {
 	return (r1.MatchString(p.input) || r2.MatchString(p.input))
 }
 
-func (p Parser) dueDate(pivot time.Time, input string) (*time.Time, error) {
-	date, err := weekdays.English(input, time.Now()).Weekday()
+func (p Parser) dueDate(pivot time.Time, input string) (time.Time, error) {
+	date, err := weekdays.English(input, pivot).Weekday()
 	if err != nil {
 		log.Println(err)
-		return &date, err
+		return date, err
 	}
 
-	return &date, nil
+	return date, nil
 }
 
 // Due returns the parsed date. if any, formatted
@@ -115,38 +115,11 @@ func (p Parser) Due(day time.Time) string {
 		return ""
 	}
 
-	switch matches[1] {
-	case "none":
-		return ""
-	case "today", "tod":
-		bod := bod(day).Format("2006-01-02")
-		return bod
-	case "tomorrow", "tom":
-		tom := day.AddDate(0, 0, 1)
-		return bod(tom).Format("2006-01-02")
-	case "monday", "mon":
-		return p.monday(day)
-	case "tuesday", "tue":
-		return p.tuesday(day)
-	case "wednesday", "wed":
-		return p.wednesday(day)
-	case "thursday", "thu":
-		return p.thursday(day)
-	case "friday", "fri":
-		return p.friday(day)
-	case "saturday", "sat":
-		return p.saturday(day)
-	case "sunday", "sun":
-		return p.sunday(day)
-	case "last week":
-		n := bod(time.Now())
-		return getNearestMonday(n).AddDate(0, 0, -7).Format("2006-01-02")
-	case "next week":
-		n := bod(time.Now())
-		return getNearestMonday(n).AddDate(0, 0, 7).Format("2006-01-02")
+	if date, err := p.dueDate(day, matches[1]); err == nil {
+		return date.Format("2006-01-02")
 	}
 
-	return p.parseArbitraryDate(matches[1], time.Now())
+	return p.parseArbitraryDate(matches[1], day)
 }
 
 func (p Parser) parseArbitraryDate(_date string, pivot time.Time) string {
@@ -180,49 +153,6 @@ func (p Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
 	fmt.Println("See http://todolist.site/#adding for more info.")
 	os.Exit(-1)
 	return time.Now()
-}
-
-func (p Parser) monday(day time.Time) string {
-	mon := getNearestMonday(day)
-	return p.thisOrNextWeek(mon, day)
-}
-
-func (p Parser) tuesday(day time.Time) string {
-	tue := getNearestMonday(day).AddDate(0, 0, 1)
-	return p.thisOrNextWeek(tue, day)
-}
-
-func (p Parser) wednesday(day time.Time) string {
-	tue := getNearestMonday(day).AddDate(0, 0, 2)
-	return p.thisOrNextWeek(tue, day)
-}
-
-func (p Parser) thursday(day time.Time) string {
-	tue := getNearestMonday(day).AddDate(0, 0, 3)
-	return p.thisOrNextWeek(tue, day)
-}
-
-func (p Parser) friday(day time.Time) string {
-	tue := getNearestMonday(day).AddDate(0, 0, 4)
-	return p.thisOrNextWeek(tue, day)
-}
-
-func (p Parser) saturday(day time.Time) string {
-	tue := getNearestMonday(day).AddDate(0, 0, 5)
-	return p.thisOrNextWeek(tue, day)
-}
-
-func (p Parser) sunday(day time.Time) string {
-	tue := getNearestMonday(day).AddDate(0, 0, 6)
-	return p.thisOrNextWeek(tue, day)
-}
-
-func (p Parser) thisOrNextWeek(day time.Time, pivotDay time.Time) string {
-	if day.Before(pivotDay) {
-		return day.AddDate(0, 0, 7).Format("2006-01-02")
-	} else {
-		return day.Format("2006-01-02")
-	}
 }
 
 func (p Parser) matchWords(input string, r *regexp.Regexp) []string {
