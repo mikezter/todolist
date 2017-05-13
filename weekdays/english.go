@@ -12,13 +12,24 @@ func English(input string, t time.Time) Weekdayer {
 	w := englishWeekdayer{input: input, pivot: pivot(t)}
 
 	w.dict = weekdayDict{
-		"mon": time.Monday,
-		"tue": time.Tuesday,
-		"wed": time.Wednesday,
-		"thu": time.Thursday,
-		"fri": time.Friday,
-		"sat": time.Saturday,
-		"sun": time.Sunday,
+		"mon":       time.Monday,
+		"monday":    time.Monday,
+		"tue":       time.Tuesday,
+		"tuesday":   time.Tuesday,
+		"wed":       time.Wednesday,
+		"wednesday": time.Wednesday,
+		"thu":       time.Thursday,
+		"thursday":  time.Thursday,
+		"fri":       time.Friday,
+		"friday":    time.Friday,
+		"sat":       time.Saturday,
+		"saturday":  time.Saturday,
+		"sun":       time.Sunday,
+		"sunday":    time.Sunday,
+		"tod":       w.pivot.Weekday(),
+		"today":     w.pivot.Weekday(),
+		"tom":       w.pivot.AddDate(0, 0, 1).Weekday(),
+		"tomorrow":  w.pivot.AddDate(0, 0, 1).Weekday(),
 	}
 	return w
 }
