@@ -40,11 +40,22 @@ type englishWeekdayer struct {
 	dict  weekdayDict
 }
 
+// Weekday works like this
+// 0  , 1  , 2  , 3  , 4  , 5  , 6
+// sun, mon, tue, wed, thu, fri, sat
+//
+// mon - wed = -2
+// -(-2) + 7 = 9
+// mon + 9  % 7 === 10 % 7 === 3 % 7 = wed
 func (w englishWeekdayer) Weekday() (time.Time, error) {
 	if weekday, ok := w.dict[w.input]; ok {
 		today := w.pivot.Weekday()
-		delta := weekday - today
-		date := w.pivot.AddDate(0, 0, modPositive(int(delta), 7))
+		delta := int(weekday - today)
+		if delta < 0 {
+			delta *= -1
+			delta += 7
+		}
+		date := w.pivot.AddDate(0, 0, delta)
 		return date, nil
 	}
 
@@ -56,10 +67,6 @@ func (w englishWeekdayer) Weekday() (time.Time, error) {
 	}
 
 	return w.pivot, errors.New("weekday not recognized")
-}
-
-func modPositive(i, n int) int {
-	return (i%n + n) % n
 }
 
 func nextMonday(t time.Time) time.Time {
