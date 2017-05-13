@@ -122,9 +122,11 @@ func (p Parser) Due(day time.Time) string {
 	case "none":
 		return ""
 	case "today", "tod":
-		return bod(time.Now()).Format("2006-01-02")
+		bod := bod(day).Format("2006-01-02")
+		return bod
 	case "tomorrow", "tom":
-		return bod(time.Now()).AddDate(0, 0, 1).Format("2006-01-02")
+		tom := day.AddDate(0, 0, 1)
+		return bod(tom).Format("2006-01-02")
 	case "monday", "mon":
 		return p.monday(day)
 	case "tuesday", "tue":
