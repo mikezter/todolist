@@ -5,6 +5,36 @@ import (
 	"time"
 )
 
+func TestWeekday(t *testing.T) {
+	today := newDate(2017, 5, 9) // tuesday
+	dates := map[string]time.Time{
+		"tod":       newDate(2017, 5, 9),  // today
+		"tom":       newDate(2017, 5, 10), // tomorrow
+		"tue":       newDate(2017, 5, 9),  // tuesday
+		"wed":       newDate(2017, 5, 10), // wednesday
+		"thu":       newDate(2017, 5, 11), // thursday
+		"fri":       newDate(2017, 5, 12), // friday
+		"sat":       newDate(2017, 5, 13), // saturday
+		"sun":       newDate(2017, 5, 14), // sunday
+		"mon":       newDate(2017, 5, 15), // monday
+		"last week": newDate(2017, 5, 1),  // monday last week
+		"next week": newDate(2017, 5, 15), // monday next week
+	}
+
+	for input, expected := range dates {
+		w := English(input, today)
+		actual, err := w.Weekday()
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		if actual != expected {
+			t.Error(input, actual, expected)
+		}
+	}
+}
+
 func TestPivot(t *testing.T) {
 	y, m, d := 2017, time.Month(12), 30
 	date := time.Date(y, m, d, 15, 53, 12, 123445, time.Local)
@@ -87,5 +117,5 @@ func TestDelta(t *testing.T) {
 }
 
 func newDate(y, m, d int) time.Time {
-	return time.Date(y, time.Month(m), d, 0, 0, 0, 1, time.UTC)
+	return time.Date(y, time.Month(m), d, 0, 0, 0, 0, time.UTC)
 }

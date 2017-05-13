@@ -26,10 +26,6 @@ func English(input string, t time.Time) Weekdayer {
 		"saturday":  time.Saturday,
 		"sun":       time.Sunday,
 		"sunday":    time.Sunday,
-		"tod":       w.pivot.Weekday(),
-		"today":     w.pivot.Weekday(),
-		"tom":       w.pivot.AddDate(0, 0, 1).Weekday(),
-		"tomorrow":  w.pivot.AddDate(0, 0, 1).Weekday(),
 	}
 	return w
 }
@@ -63,6 +59,10 @@ func (w englishWeekdayer) Weekday() (time.Time, error) {
 	}
 
 	switch w.input {
+	case "tod", "today":
+		return w.pivot, nil
+	case "tom", "tomorrow":
+		return w.pivot.AddDate(0, 0, 1), nil
 	case "last week":
 		return nextMonday(w.pivot.AddDate(0, 0, -14)), nil
 	case "next week":

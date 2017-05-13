@@ -94,8 +94,6 @@ func (p Parser) hasDue() bool {
 	return (r1.MatchString(p.input) || r2.MatchString(p.input))
 }
 
-type withoutDate error
-
 func (p Parser) dueDate(pivot time.Time, input string) (*time.Time, error) {
 	date, err := weekdays.English(input, time.Now()).Weekday()
 	if err != nil {
