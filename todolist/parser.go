@@ -2,7 +2,6 @@ package todolist
 
 import (
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -120,25 +119,19 @@ func (p Parser) Due(day time.Time) string {
 	return p.parseArbitraryDate(matches[1], day)
 }
 
-func (p Parser) parseArbitraryDate(_date string, pivot time.Time) string {
-	d1 := p.parseArbitraryDateWithYear(_date, pivot.Year())
+func (p Parser) parseArbitraryDate(input string, pivot time.Time) string {
+	date := p.parseArbitraryDateWithYear(input, pivot.Year())
 
-	var diff1 time.Duration
-	if d1.After(time.Now()) {
-		diff1 = d1.Sub(pivot)
-	} else {
-		diff1 = pivot.Sub(d1)
+	if pivot.Month() > time.May && date.Before(pivot) {
+		date = date.AddDate(1, 0, 0)
 	}
-	d2 := p.parseArbitraryDateWithYear(_date, pivot.Year()+1)
-	if d2.Sub(pivot) > diff1 {
-		return d1.Format("2006-01-02")
-	} else {
-		return d2.Format("2006-01-02")
-	}
+
+	return date.Format("2006-01-02")
 }
 
-func (p Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
-	res := strings.Join([]string{_date, strconv.Itoa(year)}, " ")
+func (p Parser) parseArbitraryDateWithYear(input string, year int) time.Time {
+	res := input + " " + strconv.Itoa(year)
+
 	if date, err := time.Parse("Jan 2 2006", res); err == nil {
 		return date
 	}
@@ -146,10 +139,10 @@ func (p Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
 	if date, err := time.Parse("2 Jan 2006", res); err == nil {
 		return date
 	}
-	fmt.Printf("Could not parse the date you gave me: %s\n", _date)
+
+	fmt.Printf("Could not parse the date you gave me: %s\n", input)
 	fmt.Println("I'm expecting a date like \"Dec 22\" or \"22 Dec\".")
 	fmt.Println("See http://todolist.site/#adding for more info.")
-	os.Exit(-1)
 	return time.Now()
 }
 

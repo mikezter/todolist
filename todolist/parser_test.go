@@ -135,10 +135,10 @@ func TestDueOnSpecificDateEuropean(t *testing.T) {
 func TestDueIntelligentlyChoosesCorrectYear(t *testing.T) {
 	assert := assert.New(t)
 	parser := Parser{}
-	marchTime, _ := time.Parse("2006-01-02", "2016-03-25")
-	januaryTime, _ := time.Parse("2006-01-02", "2016-01-05")
-	septemberTime, _ := time.Parse("2006-01-02", "2016-09-25")
-	decemberTime, _ := time.Parse("2006-01-02", "2016-12-25")
+	marchTime := newDate(2016, 3, 25)
+	januaryTime := newDate(2016, 1, 5)
+	septemberTime := newDate(2016, 9, 25)
+	decemberTime := newDate(2016, 12, 25)
 
 	assert.Equal("2016-01-10", parser.parseArbitraryDate("jan 10", januaryTime))
 	assert.Equal("2016-01-10", parser.parseArbitraryDate("jan 10", marchTime))
