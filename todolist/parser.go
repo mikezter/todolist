@@ -116,6 +116,9 @@ func (p Parser) dueDate(pivot time.Time) (*time.Time, error) {
 	return &date, nil
 }
 
+// Due returns the parsed date. if any, formatted
+// as a string. The given day is taken as a reference
+// for relative dates (e.g. monday)
 func (p Parser) Due(day time.Time) string {
 	r := regexp.MustCompile(`due (.*)$`)
 	matches := r.FindStringSubmatch(p.input)
