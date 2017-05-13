@@ -188,6 +188,8 @@ func TestDueWeekdays(t *testing.T) {
 		"due last week": formattedDate(2017, 5, 1),  // monday last week
 		"due next week": formattedDate(2017, 5, 15), // monday next week
 		"due none":      "",                         // delete dueDate
+		"due Jun 21":    formattedDate(2017, 6, 21), // arbitrary
+		"due 21 Jun":    formattedDate(2017, 6, 21), // arbitrary
 	}
 
 	p := Parser{}

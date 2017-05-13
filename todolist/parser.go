@@ -2,7 +2,6 @@ package todolist
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strconv"
@@ -97,7 +96,6 @@ func (p Parser) hasDue() bool {
 func (p Parser) dueDate(pivot time.Time, input string) (time.Time, error) {
 	date, err := weekdays.English(input, pivot).Weekday()
 	if err != nil {
-		log.Println(err)
 		return date, err
 	}
 
