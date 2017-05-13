@@ -40,6 +40,14 @@ type englishWeekdayer struct {
 	dict  weekdayDict
 }
 
+func delta(a, b time.Weekday) int {
+	delta := int(b) - int(a)
+	if delta < 0 {
+		delta += 7
+	}
+	return delta
+}
+
 // Weekday works like this
 // 0  , 1  , 2  , 3  , 4  , 5  , 6
 // sun, mon, tue, wed, thu, fri, sat
@@ -50,12 +58,7 @@ type englishWeekdayer struct {
 func (w englishWeekdayer) Weekday() (time.Time, error) {
 	if weekday, ok := w.dict[w.input]; ok {
 		today := w.pivot.Weekday()
-		delta := int(weekday - today)
-		if delta < 0 {
-			delta *= -1
-			delta += 7
-		}
-		date := w.pivot.AddDate(0, 0, delta)
+		date := w.pivot.AddDate(0, 0, delta(today, weekday))
 		return date, nil
 	}
 

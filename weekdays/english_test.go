@@ -8,10 +8,10 @@ import (
 func TestPivot(t *testing.T) {
 	y, m, d := 2017, time.Month(12), 30
 	date := time.Date(y, m, d, 15, 53, 12, 123445, time.Local)
-	expected := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+	expected := time.Date(y, m, d, 0, 0, 0, 0, time.Local)
 	actual := pivot(date)
 	if actual != expected {
-		t.Error(actual)
+		t.Error(date, actual, expected)
 	}
 }
 
@@ -45,6 +45,45 @@ func TestNextMonday(t *testing.T) {
 			t.Error(c.input, c.actual, c.expected)
 		}
 	}
+}
+
+func TestDelta(t *testing.T) {
+	days := []struct {
+		a, b time.Weekday
+		i    int
+	}{
+		{
+			a: time.Monday,
+			b: time.Tuesday,
+			i: 1,
+		}, {
+			a: time.Monday,
+			b: time.Thursday,
+			i: 3,
+		}, {
+			a: time.Sunday,
+			b: time.Monday,
+			i: 1,
+		}, {
+			a: time.Saturday,
+			b: time.Thursday,
+			i: 5,
+		}, {
+			a: time.Tuesday,
+			b: time.Monday,
+			i: 6,
+		},
+	}
+
+	var actual, expected int
+	for _, c := range days {
+		actual = delta(c.a, c.b)
+		expected = c.i
+		if actual != expected {
+			t.Error(c.a, c.b, actual, expected)
+		}
+	}
+
 }
 
 func newDate(y, m, d int) time.Time {
