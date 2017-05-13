@@ -3,13 +3,14 @@ package todolist
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/gammons/todolist/weekdayer"
+	"github.com/gammons/todolist/weekdays"
 )
 
 type Parser struct {
@@ -106,7 +107,12 @@ func (p Parser) dueDate(pivot time.Time) (*time.Time, error) {
 
 	input := matches[1]
 
-	date, err := weekdayer.English(input, time.Now())
+	date, err := weekdays.English(input, time.Now()).Weekday()
+	if err != nil {
+		log.Println(err)
+		return &date, err
+	}
+
 	return &date, nil
 }
 
