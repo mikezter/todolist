@@ -1,5 +1,6 @@
 language: go
 sudo: false
+go_import_path: github.com/gammons/todolist
 go:
   - 1.8
 os:
